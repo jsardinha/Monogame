@@ -98,6 +98,9 @@ namespace ProgrammingAssignment3
                 Exit();
 
             //STUDENTS: update rocks
+            if (rock0 != null) { rock0.Update(gameTime); }
+            if (rock1 != null) { rock1.Update(gameTime); }
+            if (rock2 != null) { rock2.Update(gameTime); }
 
 
             // update timer
@@ -106,7 +109,7 @@ namespace ProgrammingAssignment3
             {
                 // STUDENTS: timer expired, so spawn new rock if fewer than 3 rocks in window
                 // Call the GetRandomRock method to do this
-                if (rock0 == null) { rock0 = GetRandomRock(); }
+                     if (rock0 == null) { rock0 = GetRandomRock(); }
                 else if (rock1 == null) { rock1 = GetRandomRock(); }
                 else if (rock2 == null) { rock2 = GetRandomRock(); }
 
@@ -117,21 +120,10 @@ namespace ProgrammingAssignment3
             // STUDENTS: Check each rock to see if it's outside the window. If so
             // spawn a new random rock for it by calling the GetRandomRock method
             // Caution: Only check the property if the variable isn't null
-            if (rock0 != null)
-            {
-                if (rock0.OutsideWindow) { rock0 = GetRandomRock(); }
-                rock0.Update(gameTime);
-            }
-            if (rock1 != null)
-            {
-                if (rock1.OutsideWindow) { rock1 = GetRandomRock(); }
-                rock1.Update(gameTime);
-            }
-            if (rock2 != null)
-            {
-                if (rock2.OutsideWindow) { rock2 = GetRandomRock(); }
-                rock2.Update(gameTime);
-            }
+            if (rock0 != null && rock0.OutsideWindow) { rock0 = GetRandomRock(); }
+            if (rock1 != null && rock1.OutsideWindow) { rock1 = GetRandomRock(); }
+            if (rock2 != null && rock2.OutsideWindow) { rock2 = GetRandomRock(); }
+
 
             base.Update(gameTime);
         }
