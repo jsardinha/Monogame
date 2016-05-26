@@ -76,15 +76,40 @@ namespace GameProject
         public void Update(GameTime gameTime, MouseState mouse)
         {
             // burger should only respond to input if it still has health
+            if (health > 0)
+            {
+                // move burger using mouse
+                drawRectangle.X = mouse.Position.X - drawRectangle.Width / 2;
+                drawRectangle.Y = mouse.Position.Y - drawRectangle.Height / 2;
+                // clamp burger in window
+                if (drawRectangle.Left < 0) { drawRectangle.X = 0; }
+                if (drawRectangle.Right > GameConstants.WindowWidth) { drawRectangle.X = GameConstants.WindowWidth - drawRectangle.Width; }
+                if (drawRectangle.Top < 0) { drawRectangle.Y = 0; }
+                if (drawRectangle.Bottom > GameConstants.WindowHeight) { drawRectangle.Y = GameConstants.WindowHeight - drawRectangle.Height; }
+                // update shooting allowed
+                if (canShoot == false)
+                {
+                    elapsedCooldownMilliseconds += gameTime.ElapsedGameTime.Milliseconds;
+                    if (elapsedCooldownMilliseconds >= GameConstants.BurgerTotalCooldownMilliseconds || mouse.LeftButton == ButtonState.Released)
+                    {
+                        canShoot = true;
+                        elapsedCooldownMilliseconds = 0;
+                    }
+                }
+                // timer concept (for animations) introduced in Chapter 7
 
-            // move burger using mouse
-
-            // clamp burger in window
-
-            // update shooting allowed
-            // timer concept (for animations) introduced in Chapter 7
-
-            // shoot if appropriate
+                // shoot if appropriate
+                if (mouse.LeftButton == ButtonState.Pressed && canShoot)
+                {
+                    canShoot = false;
+                    Projectile projectile = new Projectile(ProjectileType.FrenchFries,
+                                                           Game1.GetProjectileSprite(ProjectileType.FrenchFries),
+                                                           drawRectangle.Center.X,
+                                                           drawRectangle.Center.Y - GameConstants.FrenchFriesProjectileOffset,
+                                                           -GameConstants.FrenchFriesProjectileSpeed);
+                    Game1.AddProjectile(projectile);
+                }
+            }
 
         }
 
