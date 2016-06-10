@@ -84,6 +84,7 @@ namespace GameProject
             // load audio content
 
             // load sprite font
+            font = Content.Load<SpriteFont>("fonts//Arial20");
 
             // load projectile and explosion sprites
             teddyBearProjectileSprite = Content.Load<Texture2D>("graphics//teddybearprojectile");
@@ -96,6 +97,8 @@ namespace GameProject
             while (bears.Count < GameConstants.MaxBears) { SpawnBear(); }
 
             // set initial health and score strings
+            healthString = GameConstants.HealthPrefix + burger.Health;
+            scoreString = GameConstants.ScorePrefix + score;
         }
 
         /// <summary>
@@ -141,10 +144,11 @@ namespace GameProject
                 {
                     if (bears[i].Active && bears[j].Active)
                     {
-                        CollisionResolutionInfo bearsCollision = CollisionUtils.CheckCollision(gameTime.ElapsedGameTime.Milliseconds,
-                                                                                               GameConstants.WindowWidth, GameConstants.WindowHeight,
-                                                                                               bears[i].Velocity, bears[i].CollisionRectangle,
-                                                                                               bears[j].Velocity, bears[j].CollisionRectangle);
+                        CollisionResolutionInfo bearsCollision = 
+                            CollisionUtils.CheckCollision(gameTime.ElapsedGameTime.Milliseconds,
+                                                          GameConstants.WindowWidth, GameConstants.WindowHeight,
+                                                          bears[i].Velocity, bears[i].CollisionRectangle,
+                                                          bears[j].Velocity, bears[j].CollisionRectangle);
                         if (bearsCollision != null)
                         {
                             if (bearsCollision.FirstOutOfBounds)
@@ -171,8 +175,31 @@ namespace GameProject
             }
 
             // check and resolve collisions between burger and teddy bears
+            foreach (TeddyBear bear in bears)
+            {
+                if (bear.Active && bear.CollisionRectangle.Intersects(burger.CollisionRectangle))
+                {
+                    bear.Active = false;
+                    burger.Health = burger.Health - GameConstants.BearDamage;
+                    healthString = GameConstants.HealthPrefix + burger.Health;                        
+                    explosions.Add(new Explosion(explosionSpriteStrip, bear.Location.X, bear.Location.Y));
+                }
+            }
+
 
             // check and resolve collisions between burger and projectiles
+            foreach (Projectile projectile in projectiles)
+            {
+                if (projectile.Type == ProjectileType.TeddyBear && projectile.Active)
+                {
+                    if (projectile.CollisionRectangle.Intersects(burger.CollisionRectangle))
+                    {
+                        projectile.Active = false;
+                        burger.Health = burger.Health - GameConstants.TeddyBearProjectileDamage;
+                        healthString = GameConstants.HealthPrefix + burger.Health;
+                    }
+                }
+            }
 
             // check and resolve collisions between teddy bears and projectiles
             foreach (TeddyBear bear in bears)
@@ -185,6 +212,8 @@ namespace GameProject
                         {
                             projectile.Active = false;
                             bear.Active = false;
+                            score += GameConstants.BearPoints;
+                            scoreString = GameConstants.ScorePrefix + score;
                             explosions.Add(new Explosion(explosionSpriteStrip, bear.Location.X, bear.Location.Y));
                         }                            
                     }
@@ -196,6 +225,8 @@ namespace GameProject
             {
                 if (!bears[i].Active) { bears.RemoveAt(i); }
             }
+
+            while (bears.Count < GameConstants.MaxBears) { SpawnBear(); }
             
 
             // clean out inactive projectiles
@@ -239,6 +270,8 @@ namespace GameProject
             }
 
             // draw score and health
+            spriteBatch.DrawString(font, scoreString, GameConstants.ScoreLocation, Color.White);
+            spriteBatch.DrawString(font, healthString, GameConstants.HealthLocation, Color.White);
 
             spriteBatch.End();
 
@@ -300,6 +333,13 @@ namespace GameProject
             TeddyBear newBear = new TeddyBear(Content, "graphics//teddybear", location_X, location_Y, velocity, null, null);
 
             // make sure we don't spawn into a collision
+            List<Rectangle> collisionRectangles = GetCollisionRectangles();
+            while (!CollisionUtils.IsCollisionFree(newBear.CollisionRectangle, collisionRectangles))
+            {
+                newBear.X = GetRandomLocation(GameConstants.SpawnBorderSize, GameConstants.WindowWidth - (GameConstants.SpawnBorderSize * 2));
+                newBear.Y = GetRandomLocation(GameConstants.SpawnBorderSize, GameConstants.WindowHeight - (GameConstants.SpawnBorderSize * 2));  
+            }
+
 
             // add new bear to list
             bears.Add(newBear);

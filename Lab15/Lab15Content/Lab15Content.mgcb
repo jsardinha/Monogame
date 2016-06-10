@@ -1,0 +1,39 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin
+/intermediateDir:obj
+/platform:Windows
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+
+#---------------------------------- Content ---------------------------------#
+
+#begin sounds/lowerLeft.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/lowerLeft.wav
+
+#begin sounds/lowerRight.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/lowerRight.wav
+
+#begin sounds/upperLeft.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/upperLeft.wav
+
+#begin sounds/upperRight.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/upperRight.wav
+
